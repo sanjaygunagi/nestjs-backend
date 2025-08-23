@@ -65,6 +65,8 @@ export class UsersController {
     if (active !== undefined) {
       return this.usersService.findByActiveStatus(active);
     }
+    console.log('Fetching fresh profile data from DB or service...');
+
     return this.usersService.findAll();
   }
 
