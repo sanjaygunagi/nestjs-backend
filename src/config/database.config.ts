@@ -9,7 +9,7 @@ export const databaseConfig: TypeOrmModuleOptions = {
   password: process.env.DB_PASSWORD || 'password',
   database: process.env.DB_NAME || 'nestjs_backend',
   entities: [User],
-  synchronize: process.env.NODE_ENV !== 'production', // Auto-sync schema in development
+  synchronize: true, //process.env.NODE_ENV !== 'production', // Auto-sync schema in development
   logging: process.env.NODE_ENV !== 'production',
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  ssl: false, //process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 };
