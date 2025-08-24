@@ -7,12 +7,11 @@ import { TerminusModule } from '@nestjs/terminus';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { FeatureModule } from './feature/feature.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { databaseConfig } from './config/database.config';
 import envConfig from './config/env.config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { User } from './users/entities/user.entity';
 
 @Module({
   imports: [
@@ -22,8 +21,24 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: () => databaseConfig,
       inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const db = configService.get('app.database');
+        const env = configService.get('app.environment');
+
+        return {
+          type: 'postgres',
+          host: db.host,
+          port: db.port,
+          username: db.username,
+          password: db.password,
+          database: db.name,
+          entities: [User],
+          synchronize: env !== 'production',
+          logging: env !== 'production',
+          ssl: false,
+        };
+      },
     }),
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
@@ -47,7 +62,6 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
     }),
     TerminusModule,
     ScheduleModule.forRoot(),
-    FeatureModule,
     UsersModule,
     AuthModule,
   ],
